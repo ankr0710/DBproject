@@ -1,0 +1,56 @@
+create table customers (
+    customer_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255),
+    birthday DATE,
+    phone Int
+);
+create Table discount_card (
+    card_id SERIAL PRIMARY KEY,
+    customer_id int,
+    balance int,
+    term_of_validity int,
+    Foreign Key (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE Table orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_id int,
+    member_id int,
+    order_date TIMESTAMP,
+    status VARCHAR(255) NOT NULL,
+    Foreign Key (customer_id) REFERENCES customers(customer_id),
+    Foreign Key (member_id) REFERENCES staff_members(member_id)
+);
+
+create TABLE staff_members(
+    member_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255),
+    status VARCHAR(255) NOT NULL
+);
+
+create table products (
+    product_id SERIAL PRIMARY KEY,
+    quantity int DEFAULT(1),
+    product_name VARCHAR(255),
+    price int,
+    suppliers_id int,
+    Foreign Key (suppliers_id) REFERENCES suppliers(suppliers_id)
+);
+
+CREATE table products_in_order(
+    product_id int,
+    order_id int,
+    price NUMERIC,
+    quantity int,
+    PRIMARY KEY (product_id, order_id),
+    Foreign Key (product_id) REFERENCES products(product_id),
+    Foreign Key (order_id) REFERENCES orders(order_id)
+);
+
+CREATE TABLE suppliers (
+    suppliers_id SERIAL PRIMARY KEY,
+    supliers_name VARCHAR(255),
+    address VARCHAR(255),
+    delivery_date TIMESTAMP,
+    phone INT
+);
