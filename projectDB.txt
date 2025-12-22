@@ -1,0 +1,74 @@
+create table customers (
+    customer_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    birthday DATE,
+    phone VARCHAR(11)
+);
+create Table discount_card (
+    card_id SERIAL PRIMARY KEY,
+    customer_id int UNIQUE,
+    balance int check (balance >= 0),
+    Foreign Key (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE Table orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_id int NOT NULL,
+    member_id int NOT NULL,
+    order_date DATE NOT NULL,
+    total_price NUMERIC,
+    status order_status,
+    payment_method pay_method,
+    Foreign Key (customer_id) REFERENCES customers(customer_id),
+    Foreign Key (member_id) REFERENCES staff_members(member_id)
+);
+
+create TABLE staff_members(
+    member_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    status staff_status
+);
+
+create table products (
+    product_id SERIAL PRIMARY KEY,
+    quantity int DEFAULT(1),
+    product_name VARCHAR(255) NOT NULL,
+    price NUMERIC,
+    category product_category
+);
+
+CREATE table products_in_order(
+    product_id int,
+    order_id int,
+    price NUMERIC,
+    quantity int,
+    PRIMARY KEY (product_id, order_id),
+    Foreign Key (product_id) REFERENCES products(product_id),
+    Foreign Key (order_id) REFERENCES orders(order_id)
+);
+
+CREATE TABLE suppliers (
+    suppliers_id SERIAL PRIMARY KEY,
+    suppliers_name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    delivery_date DATE,
+    phone VARCHAR(11)
+);
+
+create Table supply(
+    product_id INT NOT NULL,
+    suppliers_id INT NOT NULL,
+    price NUMERIC,
+    quantity Int,
+    PRIMARY KEY (product_id, suppliers_id),
+    Foreign Key (product_id) REFERENCES products(product_id),
+    Foreign Key (suppliers_id) REFERENCES suppliers(suppliers_id)
+);
+
+create type order_status as ENUM ('ready', 'in progress', 'cancelled');
+
+CREATE TYPE staff_status as enum ('manager', 'waiter', 'barista');
+
+CREATE TYPE pay_method as enum ('cash', 'card', 'online');
+
+CREATE TYPE product_category as enum ('drinks', 'desserts', 'other');
