@@ -256,3 +256,40 @@ INSERT INTO products_in_order (product_id, order_id, price, quantity) VALUES
 
 (3, 13, 180.00, 2), -- Капучино в заказе 13
 (11, 13, 250.00, 1); -- Чизкейк
+
+--1) посчитать выручку за текущий месяц
+SELECT SUM(total_price) AS monthly_revenue
+FROM orders
+WHERE order_date >= DATE_TRUNC('month', CURRENT_DATE)
+  AND order_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month';
+
+--2) 
+SELECT
+  p.product_id,
+  p.product_name,
+  JSON_AGG(
+    JSON_BUILD_OBJECT(
+      'suppliers_id', s.suppliers_id,
+      'suppliers_name', s.suppliers_name,
+      'address', s.address,
+      'phone', s.phone
+    )
+  ) AS suppliers
+FROM products p
+JOIN supply sup ON p.product_id = sup.product_id
+JOIN suppliers s ON sup.suppliers_id = s.suppliers_id
+GROUP BY p.product_id, p.product_name
+ORDER BY p.product_id;
+
+
+--3) самый продаваемый продукт
+SELECT
+  p.product_id,
+  p.product_name,
+  p.category,
+  SUM(pio.quantity) AS total_quantity
+FROM products p
+JOIN products_in_order pio ON p.product_id = pio.product_id
+GROUP BY p.product_id, p.product_name, p.category
+ORDER BY total_quantity DESC
+LIMIT 1;
